@@ -45,7 +45,8 @@ script:
 
  # test without optional requirements (append .coverage)
  - source deactivate
- - pip install -y numpy scipy
+ - pip install numpy scipy
+ - pip install pytest pytest-cov codecov
  - python setup_wonambi.py --test_import
 
  # use all optional requirements for docs
