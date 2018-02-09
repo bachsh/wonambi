@@ -19,9 +19,19 @@ before_install:
  - python setup_wonambi.py --get_files
 
 install: 
+ # install conda / python (opengl doesn't work with pip)
+ - wget -q http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+ - bash miniconda.sh -b -p $HOME/miniconda
+ - export PATH="$HOME/miniconda/bin:$PATH"
+ - chmod +x miniconda.sh
+ - conda config --set always_yes yes --set changeps1 no
+ - conda update -q conda
+ - conda info -a
+
  # install requirements
- - pip install numpy scipy
- - pip install nibabel pyqt5 vispy h5py
+ - conda create -q -n full-environment numpy scipy pyqt
+ - source activate full-environment
+ - pip install nibabel vispy h5py
  - pip install pytest pytest-qt pytest-cov codecov plotly
  - pip install sphinx sphinx_rtd_theme
  - pip install -e .
@@ -34,11 +44,12 @@ script:
  - python setup_wonambi.py --tests
 
  # test without optional requirements (append .coverage)
- - pip uninstall -y pytest-qt pyqt5 nibabel
+ - source deactivate
+ - pip install -y numpy scipy
  - python setup_wonambi.py --test_import
 
- # reinstall optional requirements for docs
- - pip install pyqt5 nibabel
+ # use all optional requirements for docs
+ - source activate full-environment
  - python setup_wonambi.py --docs
 
 after_success:
